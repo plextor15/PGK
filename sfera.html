@@ -1,0 +1,95 @@
+<html>
+	<head>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { display: block; }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+		<script>
+			var scene = new THREE.Scene();
+	var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 10 );
+	camera.position.z = 5; // przesunięcie kamery
+	var cameraLookAt = new THREE.Vector3(0, 0, 0);
+	camera.lookAt( cameraLookAt ); // punkt, na który kamera patrzy (domyślinie scene.position = 0,0,0)
+	
+	var renderer = new THREE.WebGLRenderer();
+	renderer.setSize( window.innerWidth, window.innerHeight ); // rozmiar obszaru roboczego
+	renderer.setClearColor( new THREE.Color(0xffffff) ); // kolor tła
+	document.body.appendChild( renderer.domElement );
+
+	var geometry = new THREE.Geometry( );
+	//geometry.vertices.push(new THREE.Vector3(0, 0, 0));
+	//geometry.vertices.push(new THREE.Vector3(1, 0, 0));
+	//geometry.vertices.push(new THREE.Vector3(0, 1, 0));
+	var r = 2;
+	var kat = 0;
+	var obrot = 10;
+
+	var katZ = -90;
+	var obrotZ = 10;
+	for (var j = 0; j <= 18; j++) {
+		
+		for (var i = 0; i <= 36; i++) {
+			geometry.vertices.push(new THREE.Vector3(r*Math.cos(katZ * Math.PI / 180)*Math.cos(kat * Math.PI / 180), r*Math.cos(katZ * Math.PI / 180)*Math.sin(kat * Math.PI / 180), r*Math.sin(katZ * Math.PI / 180)));
+			kat = kat + obrot;
+		}
+		katZ = katZ + obrotZ;
+	}
+
+	var material = new THREE.PointsMaterial( { size: 5, sizeAttenuation: false, color: 0x000000 } );
+	var points = new THREE.Points( geometry, material );
+	scene.add( points );
+
+	renderer.render( scene, camera );
+
+	// obsługa klawiatury
+	document.addEventListener(
+		'keydown',
+		function( e ) {
+			var rotation_step = 0.1;
+			e = e || window.event;
+			switch ( e.keyCode ) {
+				case 38: // up
+					points.rotation.x += rotation_step;
+					break;
+				case 40: // down
+					points.rotation.x -= rotation_step;
+					break;
+				case 37: // left
+					points.rotation.y -= rotation_step;
+					break;
+				case 39: // right
+					points.rotation.y += rotation_step;
+					break;
+				case 33: // page up
+					points.rotation.z += rotation_step;
+					break;
+				case 34: // page down
+					points.rotation.z -= rotation_step
+					break;
+				default:
+					;
+			}
+			camera.lookAt( cameraLookAt );
+			renderer.render( scene, camera );
+		},
+		false
+	);
+
+	// ponowne rysowanie sceny w momencie zmiany rozmiaru okna przeglądarki
+	window.addEventListener(
+		'resize',
+		function() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.render( scene, camera );
+		},
+		false
+	);
+		</script>
+	</body>
+</html>
